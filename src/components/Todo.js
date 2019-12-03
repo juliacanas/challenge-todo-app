@@ -1,10 +1,12 @@
 import React, { Component } from 'react'
 import Form from './Form'
 import todoService from '../services/tasks'
+import plus from '../images/icon-17.png'
 
 
 class Todo extends Component {
   state = {
+    formAppear: false,
     myTasksList: "",
     titleTask: "",
     descriptionTask: "",
@@ -28,8 +30,8 @@ class Todo extends Component {
       body: descriptionTask,
     }
 
-   await todoService.createTodo(newTodo)
-    const allTodos = [...myTasksList, newTodo]
+    const newOne = await todoService.createTodo(newTodo)
+    const allTodos = [...myTasksList, newOne]
 
     this.setState({
      myTasksList: allTodos,
@@ -58,18 +60,21 @@ class Todo extends Component {
   }
 
 
+  handleformAppear = () => {
+    this.setState({
+      formAppear: !this.state.formAppear
+    })
+  }
 
   render() {
-    const {titleTask, descriptionTask, myTasksList} = this.state
+    const {titleTask, descriptionTask, myTasksList, formAppear} = this.state
     return (
       <div className="container">
-
-        <Form handleChange={this.handleChange} handleFormSubmit={this.handleFormSubmit} titleTask={titleTask} descriptionTask={descriptionTask}/>
-
-        
+  
         {myTasksList &&
           <div className="cell">
           <h2>To do</h2>
+
           {myTasksList.map((task, index) => (
             <div className="card-task" key={index}>
               <div>
@@ -78,13 +83,23 @@ class Todo extends Component {
               </div>
               <div className="buttons">
                 <button className="btn">Edit</button>
-              {/* Si no pasaba el task_id no funcionaba antes lo tenia asi onClick={this.deleteTask} */}
                 <button className="btn" onClick={(e) => this.deleteTask(task._id)}>delete</button>
               </div>
             </div>
           ))}
-        </div>
+
+          <button onClick={this.handleformAppear} className="plus-btn" ><img width='30' src={plus} alt="plus" /></button>
+
+          {formAppear ?            
+              <Form handleChange={this.handleChange} handleFormSubmit={this.handleFormSubmit} titleTask={titleTask} descriptionTask={descriptionTask} />
+         : null}
+
+        </div>        
         }
+
+        <div className="cell">
+          <h2>Done</h2>
+        </div>
       </div>
     )
   }
